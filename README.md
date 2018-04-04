@@ -1,0 +1,2 @@
+# AboutJS
+JavaScript learn notes
