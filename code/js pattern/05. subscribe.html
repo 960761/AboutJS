@@ -1,0 +1,305 @@
+
+<html>
+	<head>
+		<title>test js</title>
+	</head>
+	<body>
+		<p id="para">please wait...</p>
+		<button id="count">click me</button>
+		<div id="show">0</div>
+		<div id="newDiv">another subscriber</div>
+
+		<script>
+		/*
+		//Author: xin
+		//Date: 2019-4-24
+		//Description: demo for <<javascript pattern>>
+				
+		01. sale house demo        p112
+		02. sale house enhance demo    p113	
+        03. generic implementation p114	
+        04. global subscribe implementation p118
+        05. demo p119		
+		*/
+		
+			
+		/******************************* 01. sale house demo ********************************/
+        
+		//1. publisher
+		var salesOffices = {};
+		
+		//2. listener 
+		salesOffices.clientList = [];
+		salesOffices.listen = function( fn ){ this.clientList.push(fn); };
+		
+		//3. trigger
+		salesOffices.trigger = function(){
+		  for(var i=0; i<this.clientList.length; i++){
+		    var fn = this.clientList[i];
+			fn.apply(this, arguments);
+		  }
+		
+		};
+		
+		//4. test
+		salesOffices.listen(function(price){
+		   console.log("A subscribe success");
+		   console.log("price : " + price);
+		  		
+		});
+		
+		salesOffices.listen(function(price, meter){
+		   console.log("B subscribe success");
+		   console.log("price : " + price);
+		   console.log("price : " + price + " and meter : " + meter);
+		});
+		
+		//salesOffices.trigger(10000,88);
+		/******************************* 02. sale house enhance demo********************************/
+        
+		//1. publisher
+		var salesOffices = {};
+		
+		//2. listener, because has event type, so make it object instead of array type
+		salesOffices.clientList = {};
+        salesOffices.listen = function(key, fn){
+		
+		    if( !this.clientList[key] ){
+			   this.clientList[key] = [];
+			}
+			
+			this.clientList[key].push(fn);		
+		};
+
+		//3. trigger, every time trigger will give only one event type as argments, so retrive first argument as event type
+		salesOffices.trigger = function(){
+		   var key = Array.prototype.shift.call(arguments);
+		   var fns = this.clientList[key];
+		   
+		   if(!fns){
+		     console.log("not listen to this event");
+			 return false;
+		   }
+		   if(fns.length === 0){
+		     console.log("listen function is none");
+			 return false;
+		   }
+		   
+		   for(var i=0; i<fns.length; i++){
+		     var fn = fns[i];
+			 fn.apply(this, arguments);
+		   }
+		};
+		
+		//4. test
+		
+		salesOffices.listen("meter88", function(price){
+		   console.log("A subscrible success");
+		   console.log("price: " + price);
+		   
+		});
+		
+	    salesOffices.listen("meter118", function(price){
+		   console.log("B subscrible success");
+		   console.log("price: " + price);
+		   
+		});
+		
+	    salesOffices.listen("meter88", function(price){
+		   console.log("C subscribe success");		
+		}); 
+		
+		//salesOffices.trigger("meter88", 11000);
+		//salesOffices.trigger("meter118", 9999);
+		
+	    /******************************* 03. generic implementation ********************************/
+		//generic event object
+		var event = {
+		   clientList: {},
+		   listen: function(key, fn){
+		      if( !this.clientList[key] ){
+			    this.clientList[key] = [];
+			  }
+			  this.clientList[key].push(fn);
+		   },
+		   trigger: function(){
+		      var key = Array.prototype.shift.call(arguments);
+			  var fns = this.clientList[key];
+			  
+			  if(!fns || fns.length === 0){
+			     return false;
+			  }
+			  
+			  for(var i=0; i<fns.length; i++){
+			     var fn = fns[i];
+				 fn.apply(this, arguments);
+			  }
+		   },
+		   remove: function(key, fn){
+		      var fns = this.clientList[key];
+			  
+			  if(!fns){
+			    return false;
+			  }
+		      
+			  //if not give fn, then remove all functions
+			  if( !fn ){
+			    fns.length = 0;
+				console.log('remove all event handlers');
+			  }else{
+			    //for( var k = fns.length; k>=0; k--){
+				for( var k=0; k<fns.length; k++){
+				  var _fn = fns[k];
+				  if(_fn === fn){				    
+				    fns.splice(k,1);
+					console.log('remove event handler' + fn);
+				  }
+				}
+			  }
+		   }
+		
+		};
+		
+		//copy event property to obj
+		var installEvent = function(obj){
+		  for(var i in event){
+		    obj[i] = event[i];
+		  }		
+		};
+		
+		//test
+		var salesOffice = {};
+		installEvent(salesOffice);
+		salesOffice.listen("meter100", function(price){
+		   console.log("subscribe success");
+		   console.log("price: " + price);
+		});
+		
+		//salesOffice.trigger("meter100", 10000);
+		
+		//test2
+		event.listen('msg',function(){ console.log('subscribe success'); });
+		//event.trigger('msg');
+		
+		//test remove
+		var event2 = {};
+		installEvent(event2);
+		event2.listen('meterA', fn1=function(price){
+		   console.log('A success');
+		   console.log("meterA : " + price);
+		});
+		event2.listen('meterA', fn2=function(price){
+		   console.log('B success');
+           console.log("meterA : " + price);
+		});
+		
+		//event2.trigger('meterA', 1000);
+				
+		//event2.remove('meterA', fn1);
+		//event2.remove('meterA');
+		//event2.trigger('meterA', 1000);	
+
+		/******************************* 04. global subscribe implementation ********************************/
+		var Event = (function(){
+		    var clientList = {},
+			    listen,
+				remove,
+				trigger;
+				
+			listen = function(key, fn){
+		      if( !clientList[key] ){
+			    clientList[key] = [];//cannot use this.clistList
+			  }
+			  clientList[key].push(fn);
+		    };
+		   
+		    remove = function(key, fn){
+		      var fns = clientList[key];
+			  
+			  if(!fns){
+			    return false;
+			  }
+		      
+			  //if not give fn, then remove all functions
+			  if( !fn ){
+			    fns.length = 0;
+				console.log('remove all event handlers');
+			  }else{
+			    //for( var k = fns.length; k>=0; k--){
+				for( var k=0; k<fns.length; k++){
+				  var _fn = fns[k];
+				  if(_fn === fn){				    
+				    fns.splice(k,1);
+					console.log('remove event handler' + fn);
+				  }
+				}
+			  }
+		    };
+			
+			trigger = function(){
+		      var key = Array.prototype.shift.call(arguments);
+			  var fns = clientList[key];
+			  
+			  if(!fns || fns.length === 0){
+			     return false;
+			  }
+			  
+			  for(var i=0; i<fns.length; i++){
+			     var fn = fns[i];
+				 fn.apply(this, arguments);
+			  }
+		   };
+		   
+		   return{
+		     listen: listen,
+			 trigger: trigger,
+			 remove: remove
+		   }		
+		})();
+		
+		//test
+		Event.listen('global event', function(data){
+		  console.log('event subscribe success');
+		  console.log('The arguments is ' + data);
+		});
+		
+		Event.trigger('global event', '122,55,89');
+		
+		/******************************* 05. demo ********************************/	
+		//This demo is based on 04 global Event modular
+        var count = 0;
+				
+        var btn = document.getElementById('count');
+        btn.onclick = function(){
+            count++;		
+		    Event.trigger('add',count); 			
+		};	
+
+        /*var div = document.getElementById('show');
+        Event.listen('add', function(count){
+		    div.innerHTML = count;
+		});*/	
+
+        var div = (function(){		        
+		        Event.listen('add', function(data){ div.show(data); });
+				return {
+				  show: function( data ){
+				    var divE = document.getElementById('show');
+				    divE.innerHTML = data;
+				  }
+				}
+		})();
+		
+        var divOther = (function(){		        
+		        Event.listen('add', function(data){ divOther.show(data); });
+				return {
+				  show: function( data ){
+				    var divO = document.getElementById('newDiv');
+				    divO.innerHTML = 'new subscribe success, data is ' + data;
+				  }
+				}
+		})();
+		
+		</script>
+	</body>
+</html>
