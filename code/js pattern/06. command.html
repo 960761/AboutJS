@@ -1,0 +1,129 @@
+
+<html>
+	<head>
+		<title>test js</title>
+	</head>
+	<body>
+		<p id="para">please wait...</p>
+        <button id="btn1">click 1</button>
+		<button id="btn2">click 2</button>
+		<button id="btn3">click 3</button>
+		<button id="replay">replay</button>
+		<script type="text/javascript">
+		
+		/*
+		//Author: xin
+		//Date: 2019-4-26
+		//Description: demo for <<javascript pattern>>
+				
+		01. button demo   p129
+		02. undo and redo demo     p133		
+		*/
+			 
+		
+		/******************************* 01. button demo ********************************/
+		
+		//01. side A who give command
+        var btn1 = document.getElementById("btn1");
+		var btn2 = document.getElementById("btn2");
+		var btn3 = document.getElementById("btn3");
+		
+		//02. side B who operate command
+		var MenuBar = {
+		   refresh: function(){
+		     console.log('refresh');
+		   }
+		};
+		var SubMenu = {
+		   add: function(){
+		     console.log('add menu');
+		   },
+		   del: function(){
+		     console.log('del menu');
+		   }
+		};
+		
+		//03. command
+		//if use object directly, cannot set recever, so use function to return object
+		var RefreshCommand = function(receiver){
+		   return {
+		     execute: function(){
+			    receiver.refresh();
+			 }
+		   }
+		};
+		
+		var AddCommand = function(receiver){
+		   return {
+		     execute: function(){
+			    receiver.add();
+			 }
+		   }
+		};
+		
+		var DelCommand = function(receiver){
+		   return {
+		     execute: function(){
+			    receiver.del();
+			 }
+		   }
+		};
+		
+		//04. connection A and B with command
+		var setCommand = function(button, cmd){
+		    button.onclick = function(){
+			   cmd.execute();
+			}
+		};
+		
+		//test
+		var refreshCmd = RefreshCommand(MenuBar);
+		var addCmd = AddCommand(SubMenu);
+		var delCmd = DelCommand(SubMenu);
+		
+		setCommand(btn1, refreshCmd);
+		setCommand(btn2, addCmd);
+		setCommand(btn3, delCmd);
+		
+		/******************************* 02. undo and redo demo ********************************/
+        var player = {
+		    attack: function(){ console.log('attack'); },
+			defense: function(){ console.log('defense'); },
+			jump: function(){ console.log('jump'); }
+		};
+		
+		var makeCommand = function(receiver, state){
+		    return function(){
+			   receiver[state]();
+			};
+		
+		};
+		
+		var commands = {
+		    "119": "jump", //W
+			"100": "defense", //D
+			"97": "attack" //A
+		};
+		
+		var cmdStack = [];
+		document.onkeypress = function(ev){
+		    var keyCode = ev.keyCode;
+			var cmd = makeCommand(player, commands[keyCode]);
+			
+			if(cmd){
+			   cmd();
+			   cmdStack.push(cmd);
+			}
+		};
+		
+		document.getElementById("replay").onclick = function(){
+		    console.log('replay start');
+		    var cmd;
+			while(cmd = cmdStack.shift()){
+			   cmd();
+			}
+		};
+
+		</script>
+	</body>
+</html>
