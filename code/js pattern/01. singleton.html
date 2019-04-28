@@ -1,1 +1,124 @@
 
+<html>
+	<head>
+		<title>test js</title>
+	</head>
+	<body>
+		<p id="para">please wait...</p>
+		<div id="divE">div</div>
+		<button id="loginBtn">login</button>
+		<script type="text/javascript">
+		
+		/*
+		//Author: xin
+		//Date: 2019-3-8
+		//Description: demo for <<javascript pattern>>
+		//Reference: p67		
+		*/
+				
+		/*************************** moduler ****************************/		
+		var createLoginLayer = (function(){
+		   var div;
+		   
+		   return function(){
+		     if(!div){
+			   div =  document.createElement("div");
+			   div.innerHTML = "I am login";
+			   div.style.display = "none";
+			   document.body.appendChild(div);
+			 }
+		     
+		     return div;
+		   }
+		
+		})();
+		
+		/*************************** moduler 2 ****************************/
+		//this is more clear than the first one
+	    var createLoginLayer02 = (function(){
+		   var div;
+		   
+			 if(!div){
+			   div =  document.createElement("div");
+			   div.innerHTML = "I am login";
+			   div.style.display = "none";
+			   document.body.appendChild(div);
+			 }
+			 
+			 return div;
+	
+		})();
+		
+		/*************************** global variable ****************************/
+		/*
+		//put div in global scope, will have overwrite issue
+		var div;
+		var createLoginLayer03 = function(){
+		
+			 if(!div){
+			   div =  document.createElement("div");
+			   div.innerHTML = "I am login";
+			   div.style.display = "none";
+			   document.body.appendChild(div);
+			 }
+			 
+			 return div;
+	
+		};*/
+		
+        /*document.getElementById("loginBtn").onclick = function(){
+		   //var loginLayer = createLoginLayer();
+		   var loginLayer = createLoginLayer02;//module is not a function, should not have ()		   
+		   //var loginLayer = createLoginLayer03(); 
+		   
+		   loginLayer.style.display = "block";		
+		};*/	
+		
+		/*************************** standard singleton pattern ****************************/
+		var getSingle = function(fn){
+		  var result;
+		  
+		  return function(){
+		    return result || ( result=fn.apply(this, arguments) );
+		  }
+		
+		};
+		
+		//demo for div
+		var createLoginDiv = function(){
+		    var div;
+			div =  document.createElement("div");
+			div.innerHTML = "I am login";
+			div.style.display = "none";
+			document.body.appendChild(div);
+			return div;
+		};		
+		var createSingleLoginLayer = getSingle(createLoginDiv);
+		
+		//demo for iframe
+		var createIframe = function(){
+		   var iframe = document.createElement("iframe");
+		   document.body.appendChild(iframe);
+		   return iframe;
+		
+		};				
+		var createSingleFrame = getSingle(createIframe);
+		
+		document.getElementById("loginBtn").onclick = function(){
+		   //div
+           var loginLayer = createSingleLoginLayer();		   
+		   loginLayer.style.display = "block";	
+
+		   //iframe
+		   var frame = createSingleFrame();
+		   frame.src = "http://badiu.com";
+		   
+		};
+		
+
+		
+		
+		 
+		</script>
+	</body>
+</html>
