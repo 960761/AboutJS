@@ -1,0 +1,67 @@
+
+<html>
+	<head>
+		<title>test js</title>
+	</head>
+	<body>
+		<p id="para">please wait...</p>
+		<div id="divE">div</div>
+		<button id="loginBtn">login</button>
+		<script type="text/javascript">
+		
+		/*
+		//Author: xin
+		//Date: 2019-3-8
+		//Description: demo for <<javascript pattern>>
+				
+		01. high-order        p46
+		02. gobal variable    p64		
+		*/
+		
+		
+		var arr = [1,2,3];
+		var str = 'hello';		 
+		
+		/******************************* 01. high order function demo ********************************/
+		//normal function
+		function isTypeFtn(obj, type){
+		 return Object.prototype.toString.call(obj) == '[object ' + type + ']';
+		}
+		//alert(isTypeFtn(arr,'Array'));
+		
+		
+		//high-order function
+		function isType(type){
+		
+		  return function( obj ){
+			return Object.prototype.toString.call(obj) === '[object ' + type + ']';
+		  }
+		 
+		}								
+		var isArray = isType('Array');
+		var isString = isType('String');
+		
+		//alert( isArray(arr) );
+		//alert( isString(str) );
+		
+		/******************************* 02. best practice for global variable********************************/
+		var myGlobalVar = {
+		   arr : [1],
+		};
+		
+		var myPrivateVar = (function(){
+		   var arr = [1,4];
+		   var str = "in module";
+		   
+		   return {
+		      arr: arr,
+		   }
+		})();
+		
+		//alert(arr);
+		//alert(myGlobalVar.arr);
+		//alert(myPrivateVar.arr);
+
+		</script>
+	</body>
+</html>
