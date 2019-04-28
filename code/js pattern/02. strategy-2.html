@@ -1,0 +1,86 @@
+
+<html>
+	<head>
+		<title>test js</title>
+	</head>
+	<body>
+		<p id="para">please wait...</p>
+		<div style="position:absolute; background:blue" id="ball">I am Ball</div>
+
+		<script type="text/javascript">
+		
+		/*
+		//Author: xin
+		//Date: 2019-3-8
+		//Description: demo for <<javascript pattern>>
+		//Reference : p75	
+		*/
+		/*************************** standard ****************************/
+		var strategies = {
+		   "S": function(salary){ return salary*4; },
+		   "A": function(salary){ return salary*3; },
+		   "B": function(salary){ return salary*2; }
+		};
+		
+		var calculateBonus = function(level,salary){
+		    return strategies[level](salary);		
+		};
+		
+		calculateBonus("S",2000);
+		calculateBonus("A",2000);
+		
+		/*************************** demo:animate ****************************/
+		var animateMethod = {
+		   linear: function(t,b,c,d){ return c*t/d + b;},
+		   easeIn: function(t,b,c,d){ return c*(t/=d)*t + b;}		
+		};
+		
+		var Animate = function(dom){
+		   this.dom = dom;
+		   this.startTime = 0;
+		   this.startPos = 0;
+		   this.endPos = 0;
+		   this.propertyName = null; //need to change css
+		   this.easing = null; //strategy
+		   this.duration = null;	
+		};
+		
+		Animate.prototype.start = function(propertyName, endPos, duration, easing){
+		   this.startTime = +new Date;
+		   this.startPos = this.dom.getBoundingClientRect()[propertyName]; //dom initial position
+		   this.propertyName = propertyName;
+		   this.endPos = endPos;
+		   this.duration = duration;
+		   this.easing = animateMethod[easing];
+		   
+		   var self = this;
+		   var timeId = setInterval( function(){
+		                                if(self.step() === false){ clearInterval(timeId); }		   
+		                             }, 19);
+		};
+        
+		Animate.prototype.step = function(){
+		   var t = +new Date;
+		   
+		   if( t>= this.startTime + this.duration ){
+		      this.update(this.endPos);
+			  return false;
+		   }
+		   
+		   var pos = this.easing(t-this.startTime, this.startPos, this.endPos-this.startPos, this.duration );
+		   this.update(pos);	
+		};
+		
+		Animate.prototype.update = function(pos){
+		   this.dom.style[this.propertyName] = pos + 'px';
+		};
+		
+		
+		//test
+		var div = document.getElementById("ball");
+		var animate = new Animate(div);
+		animate.start('left', 500,1000, 'linear');
+
+		</script>
+	</body>
+</html>
