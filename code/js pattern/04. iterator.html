@@ -1,0 +1,96 @@
+
+<html>
+	<head>
+		<title>test js</title>
+	</head>
+	<body>
+		<p id="para">please wait...</p>
+		<div id="divE">div</div>
+		<button id="loginBtn">login</button>
+		<script type="text/javascript">
+		
+		/*
+		//Author: xin
+		//Date: 2019-4-1
+		//Description: demo for <<javascript pattern>>
+				
+		01. iterator        p105
+		02. reverse iterator    p107
+        03. condition iterator  p107		
+		*/
+		
+		/****************************01. compare **************************/
+		var Iterator = function(obj){
+		    var current = 0;
+			
+			var next = function(){
+			    current = current+1;
+			};
+			
+			var isDone = function(){
+			    return current >= obj.length;
+			};
+			
+			var getCurrentItem = function(){
+			    return obj[current];
+			};
+			
+			return {
+			    next: next,
+				isDone: isDone,
+				getCurrentItem: getCurrentItem,
+				length: obj.length
+			}				
+		};
+		
+		var compare = function(iterator1, iterator2){
+		    if(iterator1.length !== iterator2.length){
+			   //alert("length not equal");
+			   return false;
+			}
+			
+			while( !iterator1.isDone()&&!iterator2.isDone() ){
+			   if( iterator1.getCurrentItem()!=iterator2.getCurrentItem() ){
+			     //alert("not equal");
+				 return false;
+			   }
+			   iterator1.next();
+			   iterator2.next();
+			}
+			
+			//alert("equal");
+			return true;
+		};
+		
+		var iterator1 = Iterator([1,2]);
+		var iterator2 = Iterator([1,2]);
+		
+		//alert(compare(iterator1, iterator2));
+		
+		/****************************02. reverse iterator **************************/
+        var reverseEach = function(ary, callback){
+		    for(var l=ary.length-1; l>=0; l--){
+			   callback(l, ary[l]);
+			}
+		};
+		
+		//reverseEach([1,2], function(i, n){console.log(n);} );
+		
+		/****************************02. condition iterator **************************/
+		var conditionEach = function(ary, callback){
+		    for(var l=0; l<ary.length; l++){
+			   if( callback(l, ary[l])===false ){
+			     continue;// if used to check, use break; if used to get all fit, use continue
+			   }
+			}
+		};
+		
+		//conditionEach([1,2,3,4,0], function(i,n){
+		                            if(n>3) {return false;}
+									alert(n);
+		                         }
+			         );
+		
+		</script>
+	</body>
+</html>
