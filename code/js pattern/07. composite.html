@@ -1,0 +1,200 @@
+<html>
+	<head>
+		<title>test js</title>
+	</head>
+	<body>
+		<p id="para">please wait... composite pattern demo</p>
+
+		<button id="btn">click me</button>
+		<button id="scan">scan file</button>
+		<button id="remove">remove file</button>
+		<script type="text/javascript">
+		
+		/*
+		//Author: xin
+		//Date: 2019-4-29
+		//Description: demo for <<javascript pattern>>
+				
+		01. macro command    p141
+		02. file scan    p145+p149
+
+        //Note:
+        There are 3 methods to create object:
+           a. define object directly, cannot pass in parameters;
+           b. JS mode, function that return an object, can pass in parameters;
+           c. Constructor mode, prototype to add method, can pass in parameters.	   
+		*/
+				 
+		
+		/******************************* 01. macro command ********************************/
+        var macroCmd = function(){
+		    return {
+			   commandsList:[],
+			   add: function(command){ this.commandsList.push(command); },
+			   execute: function(){
+			      for(var i=0; i<this.commandsList.length; i++){
+				    var command = this.commandsList[i];
+					command.execute();
+				  }
+			   }
+			}		
+		};
+		
+		var openTVcmd = {
+		   execute: function(){ console.log('open TV'); }
+		};
+		
+		var openPCcmd = {
+		   execute: function(){ console.log('open computer'); }
+		};
+		
+		var openQQcmd = {
+		   execute: function(){ console.log('login QQ'); }
+		};
+		
+		var setCmd = function(btn, cmd){
+		    btn.onclick = function(){
+			   cmd.execute();
+			};
+	  	};
+		
+		//test
+		var macroCommand = macroCmd();
+		macroCommand.add(openTVcmd);
+		
+		var macroCommand1 = macroCmd();
+		macroCommand1.add(openPCcmd);
+		macroCommand1.add(openQQcmd);
+		
+		macroCommand.add(macroCommand1);
+		
+		var btn = document.getElementById('btn');
+		setCmd(btn,macroCommand);
+		
+		/******************************* 02. file scan ********************************/
+		//constructor mode
+		var Folder = function(name){
+            this.name = name;
+            this.files = [];
+            this.parent = null;			
+		};
+		Folder.prototype.add = function(file){
+		    this.files.push(file);
+			file.parent = this;
+		};
+		Folder.prototype.scan = function(){
+		    console.log('start scan folder: ' + this.name);
+		    for(var i=0; i<this.files.length; i++){
+			   var file = this.files[i];
+			   file.scan();
+			}
+		};
+		Folder.prototype.remove = function(){
+		    if( !this.parent ){
+			   return;
+			}
+			
+			var files = this.parent.files;
+			for(var i=0; i<files.length; i++){
+			   var file = files[i];
+			   if(this === file){
+			     files.splice(i,1);
+				 console.log('remove folder: ' + file.name);
+			   }
+			}
+		};
+		
+		//function return object mode
+		/*var Folder = function(name){
+		   return {
+		      name: name,
+		      files:[],
+		      parent: null,
+		      add: function(file){
+			     this.files.push(file);
+			     file.parent = this;
+			  },
+			  scan: function(){
+			    console.log('start scan folder: ' + this.name);
+				for(var i=0; i<this.files.length; i++){
+				   var file = this.files[i];
+				   file.scan();
+				}
+			  },
+			  remove: function(){
+			  	if( !this.parent ){
+				   return;
+				}
+				
+				var files = this.parent.files;
+				for(var i=0; i<files.length; i++){
+				   var file = files[i];
+				   if(this === file){
+					 files.splice(i,1);
+					 console.log('remove folder: ' + file.name);
+				   }
+				}
+			  }
+		   }
+		
+		};*/
+		
+		var File = function(name){
+            this.name = name;
+            this.parent = null;			
+		};
+		File.prototype.add = function(file){
+            throw new Error('cannot add file to file');		
+		};
+		File.prototype.scan = function(){
+		    console.log('start scan file: ' + this.name);
+		};
+		File.prototype.remove = function(){
+			if( !this.parent ){
+			   return;
+			}
+			
+			var files = this.parent.files;
+			for(var i=0; i<files.length; i++){
+			   var file = files[i];
+			   if(this === file){
+			     files.splice(i,1);
+				 console.log('remove file: ' + file.name);
+			   }
+			}
+		};
+		
+		
+		//test
+		var folder = new Folder('learning resources');	
+		var folder1 = new Folder('learn javascript');
+		var folder2 = new Folder('learn jQuery');
+		
+		//var folder = Folder('learning resources');
+		//var folder1 = Folder('learn javascript');
+		//var folder2 = Folder('learn jQuery');
+		
+		var file1 = new File('You dont know JS');
+		var file2 = new File('js pattern');
+		var file3 = new File('jQuery guid');
+		var file4 = new File('jQuery headfirst');
+		
+		folder1.add(file1);
+		folder1.add(file2);
+		folder2.add(file3);
+		folder2.add(file4);
+		
+		folder.add(folder1);
+		folder.add(folder2);
+        
+		document.getElementById('scan').onclick = function(){
+		    folder.scan();
+		};
+		
+		document.getElementById('remove').onclick = function(){
+		    file1.remove();
+		};
+
+		</script>
+	</body>
+</html>
