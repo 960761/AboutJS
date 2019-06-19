@@ -1,0 +1,128 @@
+<html>
+	<head>
+		<title>test js</title>
+	</head>
+	<body>
+		<p id="para">please wait...  responsibility chain demo</p>
+
+		<script type="text/javascript">
+		
+		/*
+		//Author: xin
+		//Date: 2019-4-30
+		//Description: demo for <<javascript pattern>>
+				
+		01. chain mode  p183+185
+		02. AOP mode    p187		
+		*/
+	 
+		
+		/******************************* 01. chain mode ********************************/
+		
+		//chain object to assit in implementing 
+        var Chain = function(fn){
+		    this.fn = fn;
+			this.successor = null;
+		};
+		
+		Chain.prototype.setNextSuccessor = function(fn){
+		    return this.successor = fn;
+		};
+		
+		Chain.prototype.passRequest = function(){
+		    var ret = this.fn.apply(this, arguments);
+			
+			if(ret == 'nextSuccessor'){
+			    return this.successor&&this.successor.passRequest.apply(this.successor, arguments);
+			}
+		    
+			//console.log(ret);
+		    return ret;
+		};
+				
+		//demo 1: syn
+		var order500 = function(type, pay, stock){
+		    if( type===1 && pay==true ){
+			  console.log('500 and pay, get 100');
+			}else{
+			  return 'nextSuccessor';
+			}
+		};
+		
+		var order200 = function(type, pay, stock){
+		    if( type===2 && pay==true ){
+			  console.log('200 and pay, get 50');
+			}else{
+			  return 'nextSuccessor';
+			}
+		};
+		
+		var orderNormal = function(type, pay, stock){
+		    if( stock > 0){
+			  console.log('normal order');
+			}else{
+			  console.log('stock not enough');
+			}
+		};
+		
+		var order500C = new Chain(order500);
+		var order200C = new Chain(order200);
+		var orderNormalC = new Chain(orderNormal);
+		
+		order500C.setNextSuccessor(order200C);
+		order200C.setNextSuccessor(orderNormalC);
+		
+		//order500C.passRequest(1,true,100);
+		//order500C.passRequest(2,true,100);
+		//order500C.passRequest(1,false, 0);
+		
+		//demo 2: asyn
+		Chain.prototype.next = function(){
+		    return this.successor && this.successor.passRequest.apply(this.successor, arguments);
+		};
+		
+		var fn1 = new Chain(function(){
+		    console.log(1);
+			return 'nextSuccessor';
+		});
+		
+		var fn2 = new Chain(function(){
+		    console.log(2);
+		    var self = this;
+			setTimeout(function(){self.next();}, 1000);
+		});
+		
+		var fn3 = new Chain(function(){
+		    console.log(3);
+		});
+		
+		fn1.setNextSuccessor(fn2).setNextSuccessor(fn3);
+		//fn1.passRequest();
+		
+		/******************************* 02. AOP mode ********************************/
+        //do not need to use Chain object
+		Function.prototype.after = function(fn){
+		   var self = this;
+		   
+		   return function(){
+		       var ret = self.apply(this, arguments);
+			   
+			   if(ret==='nextSuccessor'){
+			      return fn.apply(this, arguments);
+			   }
+			   
+			   return ret;		       		   
+		   }
+		
+		};
+		
+		//test
+		var order = order500.after(order200).after(orderNormal);
+		
+		order(1,true,100);
+		order(0,false,100);
+		order(0,false,0);
+
+		</script>
+	</body>
+</html>
