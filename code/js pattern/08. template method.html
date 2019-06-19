@@ -1,0 +1,104 @@
+<html>
+	<head>
+		<title>test js</title>
+	</head>
+	<body>
+		<p id="para">please wait...  Template method pattern demo</p>
+
+		<script type="text/javascript">
+		
+		/*
+		//Author: xin
+		//Date: 2019-4-29
+		//Description: demo for <<javascript pattern>>
+				
+		01. template method with hook        p161
+		02. template method in javascript    p163		
+		*/
+				
+		/******************************* 01. template method with hook ********************************/
+        //parent
+		var drink = function(){};
+		
+		drink.prototype.boilWater = function(){
+		    console.log('step 1: boil water');
+		};
+		drink.prototype.brew = function(){
+		    throw new Error('must overwrite this method');
+		};
+		drink.prototype.addCon = function(){
+		    throw new Error('must overwrite this method');
+		};
+		
+		//hook method
+		drink.prototype.WantsCon = function(){
+		    return true;
+		};
+		
+		drink.prototype.init = function(){
+		    this.boilWater();
+			this.brew();
+			if(this.WantsCon()){
+			   this.addCon();
+			}
+		};
+		
+		//child
+		var coffeeWithHook = function(){};
+		coffeeWithHook.prototype = new drink();
+		coffeeWithHook.prototype.brew =function(){
+		    console.log('step 2: coffee brew');
+		};
+		coffeeWithHook.prototype.addCon = function(){
+		    console.log('step 3: coffee bean added');
+		};
+		coffeeWithHook.prototype.WantsCon = function(){
+		    return window.confirm('Do you need condiments?');
+		};
+		
+		//test
+		var coffee = new coffeeWithHook();
+		//coffee.init();
+		
+		/******************************* 02. template method in javascript ********************************/
+        var Drink = function(param){
+		   var boilWater = function(){
+		      console.log('step 1: boil water');		   
+		   };
+		   
+		   var brew = param.brew || function(){
+		      throw new Error('must overwrite this method');
+		   };
+		   
+		   var addCon = param.addCon || function(){
+		      throw new Error('must overwrite this method');
+		   };
+		   
+		   var wantCon = param.addCon || function(){
+		      return true;
+		   };
+		   
+		   var F = function(){};
+		   F.prototype.init = function(){
+		     boilWater();
+			 brew();
+			 if(wantCon){
+			   addCon();
+			 }
+		   };
+		
+		   return F; // F is a constructor function, not an object
+		};
+		
+		//test
+		var Tea = Drink({
+		   brew: function(){ console.log('step 2: tea brew'); },
+		   addCon: function(){ console.log('step 3: tea suger added'); }
+		});
+        
+		var tea = new Tea();
+		tea.init();
+		</script>
+	</body>
+</html>
+
