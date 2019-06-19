@@ -1,0 +1,122 @@
+<html>
+	<head>
+		<title>test js</title>
+	</head>
+	<body>
+		<p id="para">please wait... Mediator mode</p>
+
+		Please choose color: 
+		<select id="colorSelect">
+		  <option value="">please choose</option>
+		  <option value="red">red</option>
+		  <option value="blue">blue</option>
+		</select></br>
+		
+		Please choose memory:
+		<select id="memorySelect">
+		  <option value="">please choose</option>
+		  <option value="32G">32G</option>
+		  <option value="16G">16G</option>
+		</select></br>
+		
+		Please input number: <input type="text" id="numberInput"/></br>
+		
+		The color: <div id="colorInfo"></div></br>
+		The memory: <div id="memoryInfo"></div></br>
+		The number: <div id="numberInfo"></div></br>
+		
+		<button id="nextBtn" disabled="true">please choose color and number</button>
+		
+		<script type="text/javascript">
+		
+		/*
+		//Author: xin
+		//Date: 2019-5-3
+		//Description: demo for <<javascript pattern>>
+				
+		01. phone order       p203
+		
+		*/
+			
+		/******************************* 01. phone order ********************************/
+
+		
+		var goods = {
+		    "red|32G": 3,
+			"red|16G": 0,
+		    "blue|32G": 1,
+			"blue|16G": 6
+		};
+		
+		var mediator = (function(){
+		    var colorSelect = document.getElementById("colorSelect");
+			var memorySelect = document.getElementById("memorySelect");
+			var numberInput = document.getElementById("numberInput");
+			var colorInfo = document.getElementById("colorInfo");
+			var memoryInfo = document.getElementById("memoryInfo");
+			var numberInfo = document.getElementById("numberInfo");
+			var nextBtn = document.getElementById("nextBtn");  
+		return {
+		    changed: function(obj){
+			   var color = colorSelect.value,
+			       memory = memorySelect.value,
+				   number =numberInput.value,
+				   stock = goods[color+'|'+memory];
+				   
+			   if(obj===colorSelect){
+			       colorInfo.innerHTML = color;
+			   }else if(obj===memorySelect){
+			       memoryInfo.innerHTML = memory;
+			   }else if(obj===numberInput){
+			       numberInfo.innerHTML = number;
+			   }
+			   
+			   if(!color){
+			      nextBtn.disabled = true;
+			      nextBtn.innerHTML = "please select color";
+				  return;
+			   }
+			   if(!memory){
+			      nextBtn.disabled = true;
+			      nextBtn.innerHTML = "please select memory";
+				  return;
+			   }
+			   if( Number.isInteger(number-0)&&number>0 ){ //if number is position and integer
+			   
+			      if(number>stock){
+					  nextBtn.disabled = true;
+					  nextBtn.innerHTML = "stock is not enough";
+					  return;
+				  }
+			      
+			   }else{
+			      nextBtn.disabled = true;
+			      nextBtn.innerHTML = "please select correct number";
+				  return;
+			   }
+			   
+			   nextBtn.disabled = false;
+			   nextBtn.innerHTML = "put in chart";
+			                 			   
+			}//end changed function
+		   
+		}//end return 
+		
+		})();
+		
+		colorSelect.onchange = function(){
+		   mediator.changed(this);
+		};
+		memorySelect.onchange = function(){
+		   mediator.changed(this);
+		};
+		numberInput.oninput = function(){
+		   mediator.changed(this);
+		};
+		
+		/******************************* 02. ********************************/
+
+
+		</script>
+	</body>
+</html>
