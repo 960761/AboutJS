@@ -1,0 +1,63 @@
+<html>
+	<head>
+		<title>test js</title>
+	</head>
+	<body>
+		<p id="para">please wait... Adaptor demo</p>
+
+		<script type="text/javascript">
+		
+		/*
+		//Author: xin
+		//Date: 2019-3-8
+		//Description: demo for <<javascript pattern>>
+				
+		01. map demo        p248
+		02. 		
+		*/
+	 
+		
+		/******************************* 01. map demo ********************************/
+        var googleMap = {
+		    show: function(){
+			   console.log('google map');
+			}
+		};
+		
+		var baiduMap = {
+		    show: function(){
+			   console.log('baidu map');
+			}
+		};
+		
+		var renderMap = function(map){
+		
+		   if(map.show instanceof Function){
+		      map.show();
+		   }
+		};
+	
+	    renderMap(googleMap);
+		renderMap(baiduMap);
+		
+		//if one day, baidu map change its  show function to display, then orginal renderMap will fail for baidu map,or another map company
+		var myMap = {
+		    display: function(){
+			   console.log('my map');
+			}
+		
+		};
+		var myMapAdaptor = {
+		   show: function(){
+		     return myMap.display();
+		   }
+		};
+		
+		renderMap(myMapAdaptor);
+	
+		/******************************* 02. ********************************/
+
+
+		</script>
+	</body>
+</html>
